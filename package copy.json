@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "docker compose up --build",
+    "dev": "next dev",
     "build": "next build",
-    "start": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build",
+    "start": "next start",
     "lint": "next lint",
     "down": "docker compose down",
-    "db:migrate": "docker compose exec app npx prisma migrate deploy",
-    "db:generate": "docker compose exec app npx prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:generate": "prisma generate",
     "start:production": "node server.js"
   },
   "dependencies": {

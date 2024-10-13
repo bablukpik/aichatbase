@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    command: npm start
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - /app/node_modules
+
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"

@@ -1,36 +1,141 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chatbase Clone
+
+This project is a SaaS application similar to Chatbase.co, built with Next.js, Prisma, PostgreSQL, and various other technologies.
+
+## Technologies Used
+
+- Next.js 14 (React framework for production)
+- TypeScript (Static type-checking)
+- Prisma (ORM for database management)
+- PostgreSQL (Relational database)
+- NextAuth.js (Authentication for Next.js)
+- Stripe (Payment processing)
+- TailwindCSS (Utility-first CSS framework)
+- ShadCN UI (Accessible and customizable UI components)
+- R2 (Cloudflare) for file storage
+- Docker (Containerization)
+- Docker Compose (Multi-container Docker applications)
+- Node.js (JavaScript runtime)
+- npm (Package manager)
+- ESLint (JavaScript linter)
+- Prettier (Code formatter)
+- Git (Version control)
+- GitHub Actions (CI/CD)
+- Vercel (Deployment platform, optional)
+
+## Key Features
+
+- User authentication with Google OAuth and email/password
+- Dashboard for managing chatbots
+- File upload and management
+- Subscription-based pricing with Stripe integration
+- Responsive design for mobile and desktop
+- Containerized development and production environments
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18 or later
+- Docker and Docker Compose
+- A Cloudflare R2 account
+- A Stripe account
+- A Google Cloud Platform account (for OAuth)
+
+### Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```bash
+POSTGRES_USER=your_postgres_user
+POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_DB=your_database_name
+DATABASE_URL=postgresql://your_postgres_user:your_postgres_password@db:5432/your_database_name
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=http://localhost:3000
+STRIPE_SECRET_KEY=your_stripe_secret_key
+R2_ACCOUNT_ID=your_r2_account_id
+R2_ACCESS_KEY_ID=your_r2_access_key_id
+R2_SECRET_ACCESS_KEY=your_r2_secret_access_key
+R2_BUCKET=your_r2_bucket_name
+```
+
+### Running the Application
+
+#### Development
+
+To run the application in development mode:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This command uses Docker Compose with the default `docker-compose.yml` and `docker-compose.override.yml` files.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To run the application in production mode:
 
-## Learn More
+```bash
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+This command uses Docker Compose with `docker-compose.yml` and `docker-compose.prod.yml` files.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Database Management
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To run Prisma migrations:
 
-## Deploy on Vercel
+```bash
+npm run db:migrate
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To generate Prisma client:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run db:generate
+```
+
+### Stopping the Application
+
+To stop and remove containers:
+
+```bash
+npm run down
+```
+
+## Project Structure
+
+- `src/app/`: Contains the Next.js pages and API routes
+- `src/components/`: Reusable React components
+- `src/lib/`: Utility functions and configurations
+- `prisma/`: Prisma schema and migrations
+- `public/`: Static assets
+
+## Docker Configuration
+
+The project uses Docker for both development and production environments:
+
+- `Dockerfile`: Defines the container for the Next.js application
+- `docker-compose.yml`: Main Docker Compose configuration
+- `docker-compose.override.yml`: Development-specific overrides
+- `docker-compose.prod.yml`: Production-specific overrides
+
+## Authentication
+
+The application supports two authentication methods:
+
+1. Google OAuth
+2. Email and password
+
+Users can sign up and log in using either method.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License.
