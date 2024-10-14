@@ -79,7 +79,7 @@ This command uses Docker Compose with the default `docker-compose.yml` and `dock
 To run the application in production mode:
 
 ```bash
-npm run start
+npm run start:prod
 ```
 
 This command uses Docker Compose with `docker-compose.yml` and `docker-compose.prod.yml` files.

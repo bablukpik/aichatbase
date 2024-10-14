@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -23,7 +21,6 @@ services:
       - db
     volumes:
       - .:/app
-      - /app/node_modules
 
   db:
     image: postgres:15

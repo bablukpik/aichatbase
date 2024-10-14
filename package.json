@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "docker compose up --build",
+    "dev": "docker compose up",
+    "start": "node server.js",
     "build": "next build",
-    "start": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build",
     "lint": "next lint",
     "down": "docker compose down",
-    "db:migrate": "docker compose exec app npx prisma migrate deploy",
+    "db:migrate": "docker compose exec app npx prisma migrate dev",
     "db:generate": "docker compose exec app npx prisma generate",
-    "start:production": "node server.js"
+    "db:studio": "docker compose exec app npx prisma studio",
+    "db:seed": "docker compose exec app npx prisma db seed",
+    "start:prod": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build",
+    "db:migrate:prod": "docker compose exec app npx prisma migrate deploy"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.0",
@@ -44,6 +47,10 @@
     "postcss": "^8",
     "prisma": "^5.20.0",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }

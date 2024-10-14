@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   app:
-    command: npm start
+    # command: npm run start:prod
     environment:
       - NODE_ENV=production
     volumes:

@@ -21,12 +21,19 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
+        roles: {
+          connect: { name: 'Guest' } // Assuming 'Guest' is the default role
+        }
       },
       select: {
         id: true,
         name: true,
         email: true,
-        role: true,
+        roles: {
+          select: {
+            name: true
+          }
+        }
       },
     })
 
@@ -36,7 +43,7 @@ export async function POST(req: Request) {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        role: user.roles[0]?.name || 'Guest',
       }
     }, { status: 201 })
   } catch (error) {
