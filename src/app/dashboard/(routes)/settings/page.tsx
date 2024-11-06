@@ -10,12 +10,9 @@ import {
   Lock,
   FileCheck,
   Palette,
-  Globe,
   Bell,
   Building,
-  Mail,
   CreditCard,
-  Trash2,
   AlertTriangle
 } from "lucide-react"
 import { Switch } from "@/components/ui/switch"

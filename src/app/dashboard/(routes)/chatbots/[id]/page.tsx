@@ -18,16 +18,15 @@ import {
   Bot,
   Languages,
   Settings,
-  MessageSquare,
-  Code,
-  Webhook,
-  Shield,
   Palette,
+  Shield,
+  Webhook,
   Upload,
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function ChatbotConfigPage({ params }: { params: { id: string } }) {
+  const chatbotId = params.id
   const [settings, setSettings] = useState({
     name: 'Customer Support Bot',
     description: 'Handles common customer inquiries',

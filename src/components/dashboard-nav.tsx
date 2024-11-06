@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { 
-  Bot, 
-  LayoutDashboard, 
-  MessageSquare, 
-  Settings, 
+import {
+  Bot,
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
   FileText,
   Database,
   Code,
@@ -88,15 +88,15 @@ export function DashboardNav() {
     <nav className="grid gap-1">
       {items.map((item) => {
         const Icon = item.icon
-        const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`)
+        const isActive = pathname === item.href
         return (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent",
-              isActive 
-                ? "bg-accent text-accent-foreground" 
+              isActive
+                ? "bg-accent text-accent-foreground"
                 : "text-muted-foreground"
             )}
           >

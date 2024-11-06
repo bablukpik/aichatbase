@@ -41,7 +41,7 @@ export default function LoginPage() {
         router.refresh()
       }
     } catch (error) {
-      setError('Something went wrong')
+      setError(error instanceof Error ? error.message : 'Something went wrong')
     } finally {
       setIsLoading(false)
     }

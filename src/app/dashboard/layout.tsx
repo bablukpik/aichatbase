@@ -15,6 +15,7 @@ import {
 import { Notifications } from "@/components/notifications"
 import { CommandMenu } from "@/components/command-menu"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { DashboardFooter } from "@/components/dashboard-footer"
 
 export default function DashboardLayout({
   children,
@@ -86,6 +87,7 @@ export default function DashboardLayout({
             {children}
           </div>
         </main>
+        <DashboardFooter />
       </div>
     </div>
   )

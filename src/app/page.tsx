@@ -7,6 +7,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 // At the top of the file, add this type
 type IconProps = React.SVGProps<SVGSVGElement>
@@ -59,6 +60,7 @@ export default function Home() {
             </nav>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link href="/login">
               <Button variant="ghost">Sign In</Button>
             </Link>

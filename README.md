@@ -1,6 +1,6 @@
 # Chatbase Clone
 
-This project is a SaaS application similar to Chatbase.co, built with Next.js, Prisma, PostgreSQL, and various other technologies.
+A SaaS application similar to Chatbase.co, built with Next.js 14, TypeScript, Tailwind CSS, and Shadcn UI.
 
 ## Technologies Used
 
@@ -33,6 +33,18 @@ This project is a SaaS application similar to Chatbase.co, built with Next.js, P
 - Containerized development and production environments
 - Responsive design for mobile and desktop
 - Dark mode
+- 🤖 Create and manage AI chatbots
+- 📊 Analytics dashboard
+- 💬 Real-time chat interface
+- 📝 Document training
+- 👥 Team management
+- 🔑 API access
+- 🌙 Dark mode
+- 📱 Responsive design
+- 🔒 Authentication with NextAuth.js
+- 💳 Subscription management
+- 🔍 Command palette (⌘K)
+- 🌐 Multi-language support
 
 ## Getting Started
 
@@ -115,6 +127,18 @@ npm run down
 - `prisma/`: Prisma schema and migrations
 - `public/`: Static assets
 
+src/
+├── app/ # App router pages
+│ ├── api/ # API routes
+│ ├── dashboard/ # Dashboard pages
+│ └── (auth)/ # Authentication pages
+├── components/ # React components
+│ ├── ui/ # UI components
+│ └── ... # Feature components
+├── lib/ # Utility functions
+├── hooks/ # Custom hooks
+└── types/ # TypeScript types
+
 ## Authentication
 
 The application supports two authentication methods:
@@ -126,8 +150,18 @@ Users can sign up and log in using either method.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [Chatbase.co](https://chatbase.co) for inspiration
+- [Shadcn](https://twitter.com/shadcn) for the amazing UI components
+- [Vercel](https://vercel.com) for the hosting platform
