@@ -47,15 +47,22 @@ This project is a SaaS application similar to Chatbase.co, built with Next.js, P
 Create a `.env` file in the root directory with the following variables:
 
 ```bash
-POSTGRES_USER=your_postgres_user
-POSTGRES_PASSWORD=your_postgres_password
-POSTGRES_DB=your_database_name
-DATABASE_URL=postgresql://your_postgres_user:your_postgres_password@db:5432/your_database_name
+DB_HOST=db
+DB_USER=admin
+DB_PASSWORD=admin
+DB_NAME=aichatbase_db
+DB_PORT=5432
+DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public"
+DB_NAME_SHADOW=aichatbase_db_shadow
+
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+
 NEXTAUTH_SECRET=your_nextauth_secret
 NEXTAUTH_URL=http://localhost:3000
+
 STRIPE_SECRET_KEY=your_stripe_secret_key
+
 R2_ACCOUNT_ID=your_r2_account_id
 R2_ACCESS_KEY_ID=your_r2_access_key_id
 R2_SECRET_ACCESS_KEY=your_r2_secret_access_key
@@ -74,14 +81,6 @@ npm run dev
 
 This command uses Docker Compose with the default `docker-compose.yml` and `docker-compose.override.yml` files.
 
-#### Production
-
-To run the application in production mode:
-
-```bash
-npm run start:prod
-```
-
 This command uses Docker Compose with `docker-compose.yml` and `docker-compose.prod.yml` files.
 
 ### Database Management
@@ -89,7 +88,7 @@ This command uses Docker Compose with `docker-compose.yml` and `docker-compose.p
 To run Prisma migrations:
 
 ```bash
-npm run db:migrate
+npm run db:migrate:dev
 ```
 
 To generate Prisma client:
@@ -113,15 +112,6 @@ npm run down
 - `src/lib/`: Utility functions and configurations
 - `prisma/`: Prisma schema and migrations
 - `public/`: Static assets
-
-## Docker Configuration
-
-The project uses Docker for both development and production environments:
-
-- `Dockerfile`: Defines the container for the Next.js application
-- `docker-compose.yml`: Main Docker Compose configuration
-- `docker-compose.override.yml`: Development-specific overrides
-- `docker-compose.prod.yml`: Production-specific overrides
 
 ## Authentication
 

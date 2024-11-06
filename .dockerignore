@@ -10,12 +10,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Local development environment files
-.env
-.env.local
-.env.development
-.env.*.local
-
 # Docker-related files and folders
 Dockerfile
 docker-compose.yml
@@ -44,10 +38,6 @@ test-results/
 cypress/screenshots
 cypress/videos
 .nyc_output
-
-# Prisma-related files
-prisma/migrations
-prisma/.env
 
 # Git and version control
 .git
