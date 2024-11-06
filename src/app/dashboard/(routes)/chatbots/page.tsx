@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Plus, Bot, Settings, Trash2 } from "lucide-react"
 import Link from "next/link"
 import {
@@ -14,8 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 interface Chatbot {
   id: string
@@ -25,7 +25,7 @@ interface Chatbot {
   lastActive: string
 }
 
-export default function DashboardPage() {
+export default function ChatbotsPage() {
   const [chatbots, setChatbots] = useState<Chatbot[]>([
     {
       id: '1',
@@ -34,7 +34,20 @@ export default function DashboardPage() {
       messages: 1234,
       lastActive: '2 hours ago'
     },
-    // Add more sample chatbots as needed
+    {
+      id: '2',
+      name: 'Sales Assistant',
+      description: 'Helps with product recommendations and sales inquiries',
+      messages: 856,
+      lastActive: '5 minutes ago'
+    },
+    {
+      id: '3',
+      name: 'Technical Support',
+      description: 'Provides technical troubleshooting assistance',
+      messages: 2341,
+      lastActive: '1 hour ago'
+    }
   ])
 
   const [newChatbot, setNewChatbot] = useState({
@@ -44,7 +57,19 @@ export default function DashboardPage() {
 
   const handleCreateChatbot = async () => {
     // TODO: Implement chatbot creation
-    console.log('Creating chatbot:', newChatbot)
+    const newBot: Chatbot = {
+      id: (chatbots.length + 1).toString(),
+      name: newChatbot.name,
+      description: newChatbot.description,
+      messages: 0,
+      lastActive: 'Just now'
+    }
+    setChatbots([...chatbots, newBot])
+    setNewChatbot({ name: '', description: '' })
+  }
+
+  const handleDeleteChatbot = (id: string) => {
+    setChatbots(chatbots.filter(bot => bot.id !== id))
   }
 
   return (
@@ -110,10 +135,16 @@ export default function DashboardPage() {
                 </div>
               </CardTitle>
               <div className="flex gap-2">
-                <Button variant="ghost" size="icon">
-                  <Settings className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon">
+                <Link href={`/dashboard/chatbots/${chatbot.id}`}>
+                  <Button variant="ghost" size="icon">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => handleDeleteChatbot(chatbot.id)}
+                >
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               </div>

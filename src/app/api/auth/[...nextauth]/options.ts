@@ -7,6 +7,12 @@ import bcrypt from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt"
+  },
+  pages: {
+    signIn: '/login',
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -20,38 +26,47 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error('Invalid credentials')
         }
+
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
           include: { roles: true }
-        });
+        })
+
         if (!user || !user.password) {
-          return null;
+          throw new Error('User not found')
         }
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+
         if (!isPasswordValid) {
-          return null;
+          throw new Error('Invalid password')
         }
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           role: user.roles[0]?.name || 'Guest',
-        };
+        }
       }
     })
   ],
   callbacks: {
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-        session.user.role = user.role || 'Guest';
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role
+        token.id = user.id
       }
-      return session;
+      return token
     },
-  },
-  pages: {
-    signIn: '/login',
-  },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string
+        session.user.role = token.role as string
+      }
+      return session
+    }
+  }
 };

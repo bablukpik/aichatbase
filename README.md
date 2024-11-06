@@ -31,6 +31,8 @@ This project is a SaaS application similar to Chatbase.co, built with Next.js, P
 - Subscription-based pricing with Stripe integration
 - Responsive design for mobile and desktop
 - Containerized development and production environments
+- Responsive design for mobile and desktop
+- Dark mode
 
 ## Getting Started
 
