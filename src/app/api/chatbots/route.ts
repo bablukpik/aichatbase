@@ -2,23 +2,37 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { logAuditEvent } from "@/lib/audit"
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 })
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
     }
 
     const json = await req.json()
     const { name, description } = json
+
+    if (!name) {
+      return NextResponse.json(
+        { error: "Name is required" },
+        { status: 400 }
+      )
+    }
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email }
     })
 
     if (!user) {
-      return new NextResponse("User not found", { status: 404 })
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      )
     }
 
     const chatbot = await prisma.chatbot.create({
@@ -29,10 +43,21 @@ export async function POST(req: Request) {
       }
     })
 
+    // Log the audit event
+    await logAuditEvent({
+      action: "CREATE_CHATBOT",
+      resourceType: "chatbot",
+      resourceId: chatbot.id,
+      details: `Created chatbot: ${name}`,
+    })
+
     return NextResponse.json(chatbot)
   } catch (error) {
     console.error("[CHATBOTS_POST]", error)
-    return new NextResponse("Internal Error", { status: 500 })
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
   }
 }
 
@@ -40,25 +65,51 @@ export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 })
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
+      where: { email: session.user.email },
+      include: {
+        chatbots: {
+          orderBy: {
+            createdAt: 'desc'
+          },
+          include: {
+            messages: {
+              orderBy: {
+                createdAt: 'desc'
+              },
+              take: 1,
+            },
+          },
+        },
+      },
     })
 
     if (!user) {
-      return new NextResponse("User not found", { status: 404 })
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      )
     }
 
-    const chatbots = await prisma.chatbot.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" }
-    })
+    // Format chatbots with additional info
+    const chatbots = user.chatbots.map(chatbot => ({
+      ...chatbot,
+      messages: chatbot.messages.length,
+      lastActive: chatbot.messages[0]?.createdAt || chatbot.createdAt,
+    }))
 
     return NextResponse.json(chatbots)
   } catch (error) {
     console.error("[CHATBOTS_GET]", error)
-    return new NextResponse("Internal Error", { status: 500 })
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
   }
 } 

@@ -15,6 +15,7 @@ model Organization {
   updatedAt DateTime  @updatedAt
   users     User[]
   auditLogs AuditLog[]
+  invites   TeamInvite[]
 }
 
 model Account {
@@ -141,4 +142,19 @@ model AuditLog {
   @@index([organizationId])
   @@index([userId])
   @@index([timestamp])
+}
+
+model TeamInvite {
+  id             String       @id @default(cuid())
+  email          String
+  role           String       @default("member")
+  status         String       @default("pending")
+  expiresAt      DateTime
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([email])
 }

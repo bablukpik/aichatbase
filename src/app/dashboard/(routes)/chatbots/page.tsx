@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,60 +16,123 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useToast } from "@/hooks/use-toast"
+import { LoadingState } from "@/components/loading-state"
+import { ErrorState } from "@/components/error-state"
 
 interface Chatbot {
   id: string
   name: string
-  description: string
+  description: string | null
   messages: number
   lastActive: string
+  model: string
+  temperature: number
+  maxTokens: number
 }
 
 export default function ChatbotsPage() {
-  const [chatbots, setChatbots] = useState<Chatbot[]>([
-    {
-      id: '1',
-      name: 'Customer Support Bot',
-      description: 'Handles common customer inquiries',
-      messages: 1234,
-      lastActive: '2 hours ago'
-    },
-    {
-      id: '2',
-      name: 'Sales Assistant',
-      description: 'Helps with product recommendations and sales inquiries',
-      messages: 856,
-      lastActive: '5 minutes ago'
-    },
-    {
-      id: '3',
-      name: 'Technical Support',
-      description: 'Provides technical troubleshooting assistance',
-      messages: 2341,
-      lastActive: '1 hour ago'
-    }
-  ])
-
+  const [chatbots, setChatbots] = useState<Chatbot[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { toast } = useToast()
   const [newChatbot, setNewChatbot] = useState({
     name: '',
     description: ''
   })
 
-  const handleCreateChatbot = async () => {
-    // TODO: Implement chatbot creation
-    const newBot: Chatbot = {
-      id: (chatbots.length + 1).toString(),
-      name: newChatbot.name,
-      description: newChatbot.description,
-      messages: 0,
-      lastActive: 'Just now'
+  useEffect(() => {
+    fetchChatbots()
+  }, [])
+
+  const fetchChatbots = async () => {
+    try {
+      const response = await fetch('/api/chatbots')
+      if (!response.ok) throw new Error('Failed to fetch chatbots')
+      const data = await response.json()
+      setChatbots(data)
+    } catch (error) {
+      console.error('Error fetching chatbots:', error)
+      setError('Failed to load chatbots')
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load chatbots",
+      })
+    } finally {
+      setIsLoading(false)
     }
-    setChatbots([...chatbots, newBot])
-    setNewChatbot({ name: '', description: '' })
   }
 
-  const handleDeleteChatbot = (id: string) => {
-    setChatbots(chatbots.filter(bot => bot.id !== id))
+  const handleCreateChatbot = async () => {
+    try {
+      const response = await fetch('/api/chatbots', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newChatbot),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create chatbot')
+      }
+
+      const chatbot = await response.json()
+      setChatbots(prev => [chatbot, ...prev])
+      setNewChatbot({ name: '', description: '' })
+      setIsDialogOpen(false)
+      toast({
+        title: "Success",
+        description: "Chatbot created successfully",
+      })
+    } catch (error) {
+      console.error('Error creating chatbot:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create chatbot",
+      })
+    }
+  }
+
+  const handleDeleteChatbot = async (id: string) => {
+    try {
+      const response = await fetch(`/api/chatbots/${id}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete chatbot')
+      }
+
+      setChatbots(prev => prev.filter(bot => bot.id !== id))
+      toast({
+        title: "Success",
+        description: "Chatbot deleted successfully",
+      })
+    } catch (error) {
+      console.error('Error deleting chatbot:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete chatbot",
+      })
+    }
+  }
+
+  const formatMessageCount = (count: number) => {
+    if (typeof count !== 'number') return '0'
+    return count.toLocaleString()
+  }
+
+  if (isLoading) {
+    return <LoadingState message="Loading chatbots..." />
+  }
+
+  if (error) {
+    return <ErrorState message={error} />
   }
 
   return (
@@ -82,7 +145,7 @@ export default function ChatbotsPage() {
             Create and manage your AI chatbots
           </p>
         </div>
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
@@ -151,14 +214,14 @@ export default function ChatbotsPage() {
             </CardHeader>
             <CardContent>
               <CardDescription className="min-h-[40px]">
-                {chatbot.description}
+                {chatbot.description || 'No description'}
               </CardDescription>
               <div className="flex justify-between items-center mt-4 pt-4 border-t">
                 <div className="text-sm text-muted-foreground">
-                  {chatbot.messages.toLocaleString()} messages
+                  {formatMessageCount(chatbot.messages)} messages
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Active {chatbot.lastActive}
+                  Active {new Date(chatbot.lastActive).toLocaleDateString()}
                 </div>
               </div>
               <div className="mt-4 flex gap-2">
@@ -178,7 +241,7 @@ export default function ChatbotsPage() {
         ))}
 
         {/* Create New Chatbot Card */}
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Card className="hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center justify-center min-h-[250px] border-dashed">
               <CardContent className="flex flex-col items-center justify-center h-full py-8">
