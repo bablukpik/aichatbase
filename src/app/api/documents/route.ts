@@ -7,7 +7,10 @@ export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 })
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
     }
 
     const user = await prisma.user.findUnique({
@@ -15,34 +18,44 @@ export async function GET(req: Request) {
       include: {
         chatbots: {
           include: {
-            documents: true,
-          },
-        },
-      },
+            documents: {
+              orderBy: {
+                createdAt: 'desc'
+              },
+              include: {
+                chatbot: {
+                  select: {
+                    name: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     })
 
     if (!user) {
-      return new NextResponse("User not found", { status: 404 })
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      )
     }
 
-    // Format documents for the frontend
-    const documents = user.chatbots.flatMap(chatbot =>
+    // Flatten documents from all chatbots and include chatbot name
+    const documents = user.chatbots.flatMap(chatbot => 
       chatbot.documents.map(doc => ({
-        id: doc.id,
-        name: doc.name,
-        type: doc.type,
-        size: doc.size,
-        url: doc.url,
-        chatbotId: chatbot.id,
-        chatbotName: chatbot.name,
-        createdAt: doc.createdAt,
-        status: 'processed' as const,
+        ...doc,
+        chatbotName: doc.chatbot.name
       }))
     )
 
     return NextResponse.json(documents)
   } catch (error) {
     console.error("[DOCUMENTS_GET]", error)
-    return new NextResponse("Internal Error", { status: 500 })
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
   }
 } 
