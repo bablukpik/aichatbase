@@ -8,18 +8,13 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  chatbots      Chatbot[]
-  accounts      Account[]
-  sessions      Session[]
+model Organization {
+  id        String    @id @default(cuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  users     User[]
+  auditLogs AuditLog[]
 }
 
 model Account {
@@ -39,6 +34,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -47,6 +43,42 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  organizationId String
+  organization  Organization @relation(fields: [organizationId], references: [id])
+  
+  accounts      Account[]
+  sessions      Session[]
+  chatbots      Chatbot[]
+  subscription  Subscription?
+  auditLogs     AuditLog[]
+
+  @@index([organizationId])
+}
+
+model Subscription {
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId      String?   @unique @map(name: "stripe_customer_id")
+  stripeSubscriptionId  String?   @unique @map(name: "stripe_subscription_id")
+  stripePriceId         String    @map(name: "stripe_price_id")
+  stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+
+  @@index([stripePriceId])
 }
 
 model Chatbot {
@@ -55,13 +87,27 @@ model Chatbot {
   description String?
   model       String    @default("gpt-3.5-turbo")
   temperature Float     @default(0.7)
-  maxTokens   Int       @default(2000)
+  maxTokens   Int       @default(500)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  documents   Document[]
   messages    Message[]
+  documents   Document[]
+
+  @@index([userId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  chatbotId String
+  chatbot   Chatbot  @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+
+  @@index([chatbotId])
 }
 
 model Document {
@@ -74,13 +120,25 @@ model Document {
   updatedAt DateTime @updatedAt
   chatbotId String
   chatbot   Chatbot  @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+
+  @@index([chatbotId])
 }
 
-model Message {
-  id        String   @id @default(cuid())
-  content   String   @db.Text
-  role      String   @default("user")
-  createdAt DateTime @default(now())
-  chatbotId String
-  chatbot   Chatbot  @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+model AuditLog {
+  id             String       @id @default(cuid())
+  action         String
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  resourceType   String
+  resourceId     String
+  details        String       @db.Text
+  ipAddress      String
+  userAgent      String       @db.Text
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  timestamp      DateTime     @default(now())
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([timestamp])
 }

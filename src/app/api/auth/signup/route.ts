@@ -7,7 +7,10 @@ export async function POST(req: Request) {
     const { name, email, password } = await req.json()
 
     if (!name || !email || !password) {
-      return new NextResponse("Missing required fields", { status: 400 })
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      )
     }
 
     // Check if user already exists
@@ -16,29 +19,69 @@ export async function POST(req: Request) {
     })
 
     if (existingUser) {
-      return new NextResponse("User already exists", { status: 409 })
+      return NextResponse.json(
+        { error: "User already exists" },
+        { status: 409 }
+      )
     }
 
     // Hash password
     const hashedPassword = await hash(password, 12)
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      }
-    })
+    try {
+      // Create organization and user in a transaction
+      const result = await prisma.$transaction(async (tx) => {
+        // Create organization first
+        const organization = await tx.organization.create({
+          data: {
+            name: `${name}'s Organization`,
+          },
+        })
 
-    return NextResponse.json({
-      user: {
-        name: user.name,
-        email: user.email,
-      }
-    })
+        // Create user with organization reference
+        const user = await tx.user.create({
+          data: {
+            name,
+            email,
+            password: hashedPassword,
+            organizationId: organization.id,
+            subscription: {
+              create: {
+                stripePriceId: 'free',
+              }
+            }
+          },
+          include: {
+            subscription: true,
+            organization: true,
+          }
+        })
+
+        return { user, organization }
+      })
+
+      // Remove sensitive data before sending response
+      const { password: _, ...userWithoutPassword } = result.user
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          user: userWithoutPassword,
+          organization: result.organization,
+        }
+      })
+    } catch (dbError) {
+      console.error("[DB_ERROR]", dbError)
+      return NextResponse.json(
+        { error: "Failed to create account. Database error." },
+        { status: 500 }
+      )
+    }
   } catch (error) {
     console.error("[SIGNUP_ERROR]", error)
-    return new NextResponse("Internal Error", { status: 500 })
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
   }
 }

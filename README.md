@@ -22,6 +22,8 @@ A SaaS application similar to Chatbase.co, built with Next.js 14, TypeScript, Ta
 - Git (Version control)
 - GitHub Actions (CI/CD)
 - Vercel (Deployment platform, optional)
+- Docker Compose (Multi-container Docker applications)
+- Redux Toolkit (State management)
 
 ## Key Features
 

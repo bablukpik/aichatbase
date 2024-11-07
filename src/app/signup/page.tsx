@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/ui/icons"
+import { useToast } from "@/hooks/use-toast"
 
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -17,6 +18,7 @@ export default function SignUpPage() {
     password: '',
   })
   const router = useRouter()
+  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,15 +30,25 @@ export default function SignUpPage() {
         body: JSON.stringify(formData),
       })
 
-      if (response.ok) {
-        router.push('/login')
-      } else {
-        const data = await response.json()
-        throw new Error(data.error || 'Something went wrong')
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong')
       }
+
+      toast({
+        title: "Success",
+        description: "Account created successfully. Please sign in.",
+      })
+      
+      router.push('/login')
     } catch (error) {
       console.error('Sign up failed:', error)
-      // Add toast notification here
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create account",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -75,7 +87,9 @@ export default function SignUpPage() {
                   placeholder="John Doe"
                   type="text"
                   disabled={isLoading}
+                  value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
                 />
               </div>
               <div className="grid gap-1">
@@ -85,7 +99,9 @@ export default function SignUpPage() {
                   placeholder="name@example.com"
                   type="email"
                   disabled={isLoading}
+                  value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
                 />
               </div>
               <div className="grid gap-1">
@@ -95,7 +111,10 @@ export default function SignUpPage() {
                   placeholder="********"
                   type="password"
                   disabled={isLoading}
+                  value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                  minLength={8}
                 />
               </div>
               <Button className="mt-4" disabled={isLoading}>

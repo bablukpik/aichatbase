@@ -1,69 +1,37 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
+import { formatDistanceToNow } from "date-fns"
 import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { MoreHorizontal, ArrowUpDown } from "lucide-react"
-
-export type Message = {
-  id: string
-  chatbotId: string
-  chatbotName: string
-  content: string
-  response: string
-  status: "success" | "error" | "pending"
-  timestamp: string
-}
+import { MoreHorizontal, Trash2 } from "lucide-react"
+import { Message } from "@/features/messages/messagesSlice"
+import { useAppDispatch } from "@/hooks/redux"
+import { deleteMessage } from "@/features/messages/messagesSlice"
+import { useToast } from "@/hooks/use-toast"
 
 export const columns: ColumnDef<Message>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     accessorKey: "chatbotName",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Chatbot
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: "Chatbot",
   },
   {
     accessorKey: "content",
     header: "Message",
     cell: ({ row }) => {
       const content = row.getValue("content") as string
-      return <div className="max-w-[500px] truncate">{content}</div>
+      return (
+        <div className="max-w-[500px] truncate" title={content}>
+          {content}
+        </div>
+      )
     },
   },
   {
@@ -71,7 +39,11 @@ export const columns: ColumnDef<Message>[] = [
     header: "Response",
     cell: ({ row }) => {
       const response = row.getValue("response") as string
-      return <div className="max-w-[500px] truncate">{response}</div>
+      return (
+        <div className="max-w-[500px] truncate" title={response}>
+          {response}
+        </div>
+      )
     },
   },
   {
@@ -80,15 +52,10 @@ export const columns: ColumnDef<Message>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string
       return (
-        <Badge
-          variant={
-            status === "success"
-              ? "default"
-              : status === "pending"
-              ? "secondary"
-              : "destructive"
-          }
-        >
+        <Badge variant={
+          status === 'success' ? 'default' :
+          status === 'pending' ? 'secondary' : 'destructive'
+        }>
           {status}
         </Badge>
       )
@@ -96,15 +63,13 @@ export const columns: ColumnDef<Message>[] = [
   },
   {
     accessorKey: "timestamp",
-    header: ({ column }) => {
+    header: "Time",
+    cell: ({ row }) => {
+      const timestamp = new Date(row.getValue("timestamp"))
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Time
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <div title={timestamp.toLocaleString()}>
+          {formatDistanceToNow(timestamp, { addSuffix: true })}
+        </div>
       )
     },
   },
@@ -112,6 +77,24 @@ export const columns: ColumnDef<Message>[] = [
     id: "actions",
     cell: ({ row }) => {
       const message = row.original
+      const dispatch = useAppDispatch()
+      const { toast } = useToast()
+
+      const handleDelete = async () => {
+        try {
+          await dispatch(deleteMessage(message.id)).unwrap()
+          toast({
+            title: "Success",
+            description: "Message deleted successfully",
+          })
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to delete message",
+          })
+        }
+      }
 
       return (
         <DropdownMenu>
@@ -129,12 +112,12 @@ export const columns: ColumnDef<Message>[] = [
               Copy message
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(message.response)}
+              className="text-destructive focus:text-destructive"
+              onClick={handleDelete}
             >
-              Copy response
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete message
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

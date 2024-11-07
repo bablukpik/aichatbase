@@ -1,47 +1,100 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { signIn } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/ui/icons"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const router = useRouter()
+  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError(null)
 
     try {
       const result = await signIn('credentials', {
-        redirect: false,
         email: formData.email,
         password: formData.password,
-        callbackUrl,
+        redirect: false,
       })
 
       if (result?.error) {
-        setError(result.error)
-      } else {
-        router.push(callbackUrl)
+        const errorMessage = 
+          result.error === "CredentialsSignin" 
+            ? "Invalid email or password" 
+            : result.error
+
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: errorMessage,
+        })
+        return
+      }
+
+      if (result?.ok) {
+        toast({
+          title: "Success",
+          description: "Welcome back! Redirecting to dashboard...",
+        })
+        router.push('/dashboard')
         router.refresh()
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Something went wrong')
+      console.error('Login failed:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true)
+    try {
+      const result = await signIn('google', { 
+        callbackUrl: '/dashboard',
+        redirect: false,
+      })
+
+      if (result?.error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to login with Google. Please try again.",
+        })
+      }
+
+      if (result?.ok) {
+        toast({
+          title: "Success",
+          description: "Successfully logged in with Google!",
+        })
+        router.push(result.url || '/dashboard')
+      }
+    } catch (error) {
+      console.error('Google login failed:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to login with Google. Please try again.",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -57,8 +110,17 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <Button variant="outline" className="w-full" onClick={() => signIn('google')}>
-            <Icons.google className="mr-2 h-4 w-4" />
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            onClick={handleGoogleLogin}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Icons.google className="mr-2 h-4 w-4" />
+            )}
             Sign in with Google
           </Button>
           <div className="relative">
@@ -71,11 +133,6 @@ export default function LoginPage() {
               </span>
             </div>
           </div>
-          {error && (
-            <div className="bg-destructive/15 text-destructive text-center p-2 rounded-md">
-              {error}
-            </div>
-          )}
           <form onSubmit={handleSubmit}>
             <div className="grid gap-2">
               <div className="grid gap-1">
@@ -84,9 +141,13 @@ export default function LoginPage() {
                   id="email"
                   placeholder="name@example.com"
                   type="email"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect="off"
                   disabled={isLoading}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
                 />
               </div>
               <div className="grid gap-1">
@@ -95,9 +156,11 @@ export default function LoginPage() {
                   id="password"
                   placeholder="********"
                   type="password"
+                  autoComplete="current-password"
                   disabled={isLoading}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
                 />
               </div>
               <Button className="mt-4" disabled={isLoading}>

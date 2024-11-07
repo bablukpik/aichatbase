@@ -8,6 +8,17 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { ThemeToggle } from "@/components/theme-toggle"
+import {
+  Bot,
+  FileText,
+  Users,
+  BarChart2,
+  Globe,
+  Palette,
+  Code,
+  Shield,
+  RefreshCcw,
+} from "lucide-react"
 
 // At the top of the file, add this type
 type IconProps = React.SVGProps<SVGSVGElement>
@@ -105,17 +116,17 @@ export default function Home() {
       <section id="features" className="container py-20 space-y-16">
         <div className="mx-auto flex max-w-[980px] flex-col items-center gap-4 text-center">
           <h2 className="text-3xl font-bold leading-tight tracking-tighter md:text-4xl">
-            Key Features
+            Powerful Features for Your AI Chatbots
           </h2>
           <p className="text-muted-foreground">
-            Everything you need to build custom AI chatbots
+            Everything you need to create, train, and manage intelligent chatbots
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           {features.map((feature, i) => (
-            <div key={i} className="group relative overflow-hidden rounded-lg border p-6 hover:border-primary">
+            <div key={i} className="group relative overflow-hidden rounded-lg border p-6 hover:border-primary transition-colors">
               <div className="flex flex-col gap-4">
-                <feature.icon className="h-8 w-8" />
+                <feature.icon className="h-8 w-8 text-primary" />
                 <h3 className="font-bold">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
               </div>
@@ -269,71 +280,50 @@ export default function Home() {
 
 const features = [
   {
-    title: "Train on Your Data",
-    description: "Upload documents, connect websites, or add text to train your custom ChatGPT.",
-    icon: function DocumentIcon(props: IconProps) {
-      return (
-        <svg
-          {...props}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-          />
-        </svg>
-      )
-    }
+    title: "AI-Powered Chatbots",
+    description: "Create custom ChatGPT bots trained on your specific data and knowledge base.",
+    icon: Bot
   },
   {
-    title: "Instant Deployment",
-    description: "Get a chatbot that's ready to use in minutes. No coding required.",
-    icon: function RocketIcon(props: IconProps) {
-      return (
-        <svg
-          {...props}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
-          />
-        </svg>
-      )
-    }
+    title: "Document Training",
+    description: "Upload PDFs, DOCs, or connect websites to train your chatbot with your content.",
+    icon: FileText
+  },
+  {
+    title: "Team Collaboration",
+    description: "Work together with your team to manage and improve your chatbots.",
+    icon: Users
   },
   {
     title: "Advanced Analytics",
-    description: "Track usage, monitor performance, and optimize your chatbot with detailed analytics.",
-    icon: function ChartIcon(props: IconProps) {
-      return (
-        <svg
-          {...props}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"
-          />
-        </svg>
-      )
-    }
+    description: "Track performance, usage patterns, and user engagement with detailed metrics.",
+    icon: BarChart2
   },
+  {
+    title: "Multi-Language Support",
+    description: "Create chatbots that can communicate in multiple languages.",
+    icon: Globe
+  },
+  {
+    title: "Custom Branding",
+    description: "Customize the look and feel to match your brand identity.",
+    icon: Palette
+  },
+  {
+    title: "API Access",
+    description: "Integrate chatbots into your applications with our comprehensive API.",
+    icon: Code
+  },
+  {
+    title: "Enterprise Security",
+    description: "Advanced security features including SSO and audit logs.",
+    icon: Shield
+  },
+  {
+    title: "Real-time Training",
+    description: "Train and improve your chatbot's responses in real-time.",
+    icon: RefreshCcw
+  }
 ]
 
 const steps = [
@@ -354,69 +344,53 @@ const steps = [
 const pricingPlans = [
   {
     name: "Free",
-    description: "Perfect for trying out our service",
     price: "0",
-    featured: false,
-    buttonText: "Get Started",
+    description: "Perfect for trying out our service",
     features: [
+      "1 Chatbot",
       "1,000 messages/month",
-      "2 chatbots",
       "Basic analytics",
-      "48-hour support response time",
-      "Standard rate limits",
       "Community support",
+      "Basic customization",
+      "File upload up to 5MB",
+      "Standard response time",
     ],
   },
   {
     name: "Pro",
-    description: "Best for growing businesses",
     price: "49",
+    description: "Best for growing businesses",
     featured: true,
-    buttonText: "Start Free Trial",
     features: [
-      "10,000 messages/month",
       "Unlimited chatbots",
+      "50,000 messages/month",
       "Advanced analytics",
       "Priority support",
-      "Custom branding",
+      "Full customization",
+      "File upload up to 50MB",
+      "Team collaboration (up to 5)",
       "API access",
-      "Webhook integration",
-      "Custom domains",
-      "Team collaboration",
+      "Custom branding",
+      "Audit logs",
+      "Multi-language support",
     ],
   },
   {
     name: "Enterprise",
+    price: "Custom",
     description: "For large-scale deployments",
-    price: "199",
-    featured: false,
-    buttonText: "Contact Sales",
     features: [
+      "Everything in Pro",
       "Unlimited messages",
-      "Unlimited chatbots",
-      "Enterprise analytics",
+      "Unlimited team members",
       "24/7 dedicated support",
-      "Custom integrations",
-      "SLA guarantee",
-      "Advanced security features",
-      "SSO authentication",
+      "Custom SLA",
       "Custom AI model training",
-      "Multi-language support",
-      "Advanced role management",
-      "Custom data retention",
-      "Dedicated account manager",
-      "Priority feature requests",
-      "Custom API rate limits",
-      "Advanced data encryption",
-      "Compliance certifications",
-      "Private cloud deployment",
-      "Custom webhook endpoints",
-      "Advanced team permissions",
-      "Audit logs",
-      "Custom training data",
-      "Enterprise SLA",
-      "Custom reporting",
-      "White-label solution",
+      "Enterprise SSO",
+      "Advanced security",
+      "Custom analytics",
+      "Dedicated manager",
+      "On-premise deployment",
     ],
   },
 ]
@@ -424,20 +398,23 @@ const pricingPlans = [
 const testimonials = [
   {
     name: "Sarah Johnson",
-    role: "Product Manager at TechCorp",
+    role: "Customer Success Manager",
+    company: "TechCorp",
+    content: "This platform has transformed how we handle customer support. Our response times improved by 80% and customer satisfaction is at an all-time high.",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
-    content: "This platform has transformed how we handle customer support. Our response times have improved by 80%.",
   },
   {
     name: "Michael Chen",
-    role: "CEO at StartupX",
+    role: "CTO",
+    company: "StartupX",
+    content: "The ease of setup and quality of responses exceeded our expectations. The ability to train on our documentation made it invaluable for both customer support and internal use.",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-    content: "The ease of setup and quality of responses has exceeded our expectations. A game-changer for our business.",
   },
   {
     name: "Emily Rodriguez",
-    role: "Customer Success at SaaS Inc",
+    role: "Head of Support",
+    company: "SaaS Inc",
+    content: "The multi-language support and custom branding options helped us expand globally. Our customers love getting instant, accurate responses 24/7.",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=3",
-    content: "Our customers love the instant, accurate responses. It's like having a 24/7 support team.",
   },
 ]

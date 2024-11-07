@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
+import { useToast } from "@/hooks/use-toast"
 import {
   Select,
   SelectContent,
@@ -22,18 +24,104 @@ import {
   Shield,
   Webhook,
   Upload,
+  Loader2
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+interface ChatbotSettings {
+  name: string
+  description: string
+  model: string
+  temperature: number
+  maxTokens: number
+}
+
 export default function ChatbotConfigPage({ params }: { params: { id: string } }) {
-  const chatbotId = params.id
-  const [settings, setSettings] = useState({
-    name: 'Customer Support Bot',
-    description: 'Handles common customer inquiries',
-    language: 'en',
-    temperature: '0.7',
-    maxTokens: '2000',
+  const router = useRouter()
+  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
+  const [settings, setSettings] = useState<ChatbotSettings>({
+    name: '',
+    description: '',
+    model: 'gpt-3.5-turbo',
+    temperature: 0.7,
+    maxTokens: 2000,
   })
+
+  useEffect(() => {
+    const fetchChatbot = async () => {
+      try {
+        const response = await fetch(`/api/chatbots/${params.id}`)
+        if (!response.ok) throw new Error('Failed to fetch chatbot')
+        const data = await response.json()
+        setSettings(data)
+      } catch (error) {
+        console.error('Error fetching chatbot:', error)
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load chatbot settings",
+        })
+      }
+    }
+
+    fetchChatbot()
+  }, [params.id, toast])
+
+  const handleSave = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/chatbots/${params.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      })
+
+      if (!response.ok) throw new Error('Failed to update chatbot')
+
+      toast({
+        title: "Success",
+        description: "Chatbot settings updated successfully",
+      })
+    } catch (error) {
+      console.error('Error updating chatbot:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update chatbot settings",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this chatbot?')) return
+
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/chatbots/${params.id}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) throw new Error('Failed to delete chatbot')
+
+      toast({
+        title: "Success",
+        description: "Chatbot deleted successfully",
+      })
+      router.push('/dashboard/chatbots')
+    } catch (error) {
+      console.error('Error deleting chatbot:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete chatbot",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -44,7 +132,22 @@ export default function ChatbotConfigPage({ params }: { params: { id: string } }
             Customize your chatbot settings and behavior
           </p>
         </div>
-        <Button>Save Changes</Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="destructive" 
+            onClick={handleDelete}
+            disabled={isLoading}
+          >
+            Delete
+          </Button>
+          <Button 
+            onClick={handleSave}
+            disabled={isLoading}
+          >
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Changes
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="general" className="w-full">

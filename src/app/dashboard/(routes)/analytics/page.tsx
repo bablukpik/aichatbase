@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AnalyticsChart } from "@/components/analytics-chart"
 import { 
@@ -19,38 +20,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-const usageData = [
-  { name: "Jan 1", total: 145 },
-  { name: "Jan 2", total: 234 },
-  { name: "Jan 3", total: 321 },
-  { name: "Jan 4", total: 456 },
-  { name: "Jan 5", total: 234 },
-  { name: "Jan 6", total: 567 },
-  { name: "Jan 7", total: 678 },
-]
-
-const responseTimeData = [
-  { name: "Jan 1", total: 0.8 },
-  { name: "Jan 2", total: 0.5 },
-  { name: "Jan 3", total: 0.7 },
-  { name: "Jan 4", total: 0.3 },
-  { name: "Jan 5", total: 0.4 },
-  { name: "Jan 6", total: 0.6 },
-  { name: "Jan 7", total: 0.4 },
-]
-
-const accuracyData = [
-  { name: "Jan 1", total: 92 },
-  { name: "Jan 2", total: 94 },
-  { name: "Jan 3", total: 91 },
-  { name: "Jan 4", total: 96 },
-  { name: "Jan 5", total: 93 },
-  { name: "Jan 6", total: 95 },
-  { name: "Jan 7", total: 94 },
-]
+import { useAppDispatch, useAppSelector } from "@/hooks/redux"
+import { 
+  fetchAnalytics, 
+  setPeriod,
+  selectAnalyticsData,
+  selectAnalyticsPeriod,
+  selectAnalyticsStatus,
+  selectAnalyticsError
+} from "@/features/analytics/analyticsSlice"
+import { LoadingState } from "@/components/loading-state"
+import { ErrorState } from "@/components/error-state"
 
 export default function AnalyticsPage() {
+  const dispatch = useAppDispatch()
+  const data = useAppSelector(selectAnalyticsData)
+  const period = useAppSelector(selectAnalyticsPeriod)
+  const status = useAppSelector(selectAnalyticsStatus)
+  const error = useAppSelector(selectAnalyticsError)
+
+  useEffect(() => {
+    dispatch(fetchAnalytics(period))
+  }, [dispatch, period])
+
+  if (status === 'loading') {
+    return <LoadingState message="Loading analytics..." />
+  }
+
+  if (status === 'failed') {
+    return <ErrorState message={error || 'Failed to load analytics'} />
+  }
+
+  if (!data) {
+    return null
+  }
+
   return (
     <div className="flex flex-col gap-8">
       {/* Header */}
@@ -61,7 +65,10 @@ export default function AnalyticsPage() {
             Track and analyze your chatbot performance
           </p>
         </div>
-        <Select defaultValue="7d">
+        <Select 
+          value={period}
+          onValueChange={(value: '24h' | '7d' | '30d' | '90d') => dispatch(setPeriod(value))}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select time period" />
           </SelectTrigger>
@@ -82,7 +89,7 @@ export default function AnalyticsPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12,234</div>
+            <div className="text-2xl font-bold">{data.totalUsers.toLocaleString()}</div>
             <div className="flex items-center text-xs text-green-500">
               <ArrowUpRight className="h-4 w-4 mr-1" />
               15% from last month
@@ -95,7 +102,7 @@ export default function AnalyticsPage() {
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">123,456</div>
+            <div className="text-2xl font-bold">{data.totalMessages.toLocaleString()}</div>
             <div className="flex items-center text-xs text-green-500">
               <ArrowUpRight className="h-4 w-4 mr-1" />
               2.5% from last month
@@ -108,7 +115,7 @@ export default function AnalyticsPage() {
             <Bot className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">15</div>
+            <div className="text-2xl font-bold">{data.activeChatbots.toLocaleString()}</div>
             <div className="flex items-center text-xs text-red-500">
               <ArrowDownRight className="h-4 w-4 mr-1" />
               1 less than last month
@@ -121,7 +128,7 @@ export default function AnalyticsPage() {
             <BrainCircuit className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">24</div>
+            <div className="text-2xl font-bold">{data.trainingSessions.toLocaleString()}</div>
             <div className="flex items-center text-xs text-green-500">
               <ArrowUpRight className="h-4 w-4 mr-1" />
               8 more than last month
@@ -141,7 +148,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <AnalyticsChart 
-              data={usageData} 
+              data={data.usageTrends}
               title="Messages per Day"
             />
           </CardContent>
@@ -155,7 +162,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <AnalyticsChart 
-              data={responseTimeData} 
+              data={data.responseTimes}
               title="Average Response Time (s)"
             />
           </CardContent>
@@ -169,7 +176,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <AnalyticsChart 
-              data={accuracyData} 
+              data={data.accuracy}
               title="Response Accuracy (%)"
             />
           </CardContent>
