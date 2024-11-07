@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
 
 interface Document {
   id: string
@@ -65,9 +66,55 @@ export default function DocumentsPage() {
 
   const [selectedChatbot, setSelectedChatbot] = useState<string>('')
   const [uploadType, setUploadType] = useState<string>('file')
+  const { toast } = useToast()
+  const [isUploading, setIsUploading] = useState(false)
 
   const handleDeleteDocument = (id: string) => {
     setDocuments(documents.filter(doc => doc.id !== id))
+  }
+
+  const handleFileUpload = async (file: File, chatbotId?: string) => {
+    try {
+      setIsUploading(true)
+      const formData = new FormData()
+      formData.append('file', file)
+      if (chatbotId) {
+        formData.append('chatbotId', chatbotId)
+      }
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Upload failed')
+      }
+
+      const document = await response.json()
+      setDocuments([document, ...documents])
+      
+      toast({
+        title: "Success",
+        description: "File uploaded successfully",
+      })
+    } catch (error) {
+      console.error('Upload error:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to upload file",
+      })
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      handleFileUpload(file, selectedChatbot)
+    }
   }
 
   return (
@@ -115,7 +162,12 @@ export default function DocumentsPage() {
               {uploadType === 'file' && (
                 <div className="grid gap-2">
                   <Label>File</Label>
-                  <Input type="file" />
+                  <Input 
+                    type="file" 
+                    onChange={handleFileChange}
+                    disabled={isUploading}
+                  />
+                  {isUploading && <LoadingState message="Uploading file..." />}
                 </div>
               )}
 

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      target: production
+    environment:
+      - NODE_ENV=production
+    restart: always
+
+  db:
+    restart: always
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_prod_data: 
