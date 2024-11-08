@@ -6,6 +6,7 @@ import messagesReducer from '@/features/messages/messagesSlice'
 import documentsReducer from '@/features/documents/documentsSlice'
 import auditReducer from '@/features/audit/auditSlice'
 import teamReducer from '@/features/team/teamSlice'
+import trainingReducer from '@/features/training/trainingSlice'
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     documents: documentsReducer,
     audit: auditReducer,
     team: teamReducer,
+    training: trainingReducer,
   },
 })
 
