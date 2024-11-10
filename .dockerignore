@@ -43,3 +43,8 @@ cypress/videos
 .git
 .gitignore
 .git/*
+
+# App files
+README.md
+package.json
+package-lock.json

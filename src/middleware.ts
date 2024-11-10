@@ -2,7 +2,7 @@ import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 
 export default withAuth(
-  function middleware() {
+  function middleware(req) {
     return NextResponse.next()
   },
   {
@@ -13,5 +13,9 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ["/dashboard/:path*"]
+  matcher: [
+    "/dashboard/:path*",
+    // Exclude chat and embed routes from auth
+    "/((?!api/chat|api/embed|chat-widget).*)",
+  ]
 }

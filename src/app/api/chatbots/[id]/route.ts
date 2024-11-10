@@ -9,9 +9,9 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 })
-    }
+    // if (!session?.user?.email) {
+    //   return new NextResponse("Unauthorized", { status: 401 })
+    // }
 
     const chatbot = await prisma.chatbot.findUnique({
       where: { id: params.id },
@@ -24,13 +24,27 @@ export async function GET(
       }
     })
 
+    // const chatbot = await prisma.chatbot.findUnique({
+    //   where: {
+    //     id: params.id,
+    //   },
+    //   select: {
+    //     id: true,
+    //     name: true,
+    //     description: true,
+    //     model: true,
+    //     temperature: true,
+    //     maxTokens: true,
+    //   },
+    // })
+
     if (!chatbot) {
       return new NextResponse("Chatbot not found", { status: 404 })
     }
 
     return NextResponse.json(chatbot)
   } catch (error) {
-    console.error("[CHATBOT_GET_ERROR]", error)
+    console.error("[CHATBOT_GET]", error)
     return new NextResponse("Internal Error", { status: 500 })
   }
 }

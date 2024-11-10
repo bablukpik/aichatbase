@@ -29,8 +29,8 @@ export function EmbedCodeGenerator({ chatbotId }: EmbedCodeGeneratorProps) {
     primaryColor: "${config.primaryColor}"
   }
 </script>
-<script
-  src="https://chatbase-clone.vercel.app/embed.js"
+<script 
+  src="${process.env.NEXT_PUBLIC_APP_URL}/api/embed/script"
   defer>
 </script>`
 
