@@ -24,6 +24,8 @@ services:
       - aichatbase_db
     volumes:
       - ./:/app
+      - /app/.next
+      # - /app/node_modules
     restart: unless-stopped
 
   aichatbase_db:
