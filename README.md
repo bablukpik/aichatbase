@@ -61,29 +61,10 @@ A SaaS application similar to Chatbase.co, built with Next.js 14, TypeScript, Ta
 
 ### Environment Variables
 
-Create a `.env` file in the root directory with the following variables:
+Create a `.env` file in the root directory with the variables from `.env.example`. Here is a command to copy the example file:
 
 ```bash
-DB_HOST=db
-DB_USER=admin
-DB_PASSWORD=admin
-DB_NAME=aichatbase_db
-DB_PORT=5432
-DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public"
-DB_NAME_SHADOW=aichatbase_db_shadow
-
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-NEXTAUTH_SECRET=your_nextauth_secret
-NEXTAUTH_URL=http://localhost:3000
-
-STRIPE_SECRET_KEY=your_stripe_secret_key
-
-R2_ACCOUNT_ID=your_r2_account_id
-R2_ACCESS_KEY_ID=your_r2_access_key_id
-R2_SECRET_ACCESS_KEY=your_r2_secret_access_key
-R2_BUCKET=your_r2_bucket_name
+cp .env.example .env
 ```
 
 ### Running the Application
