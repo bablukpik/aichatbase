@@ -39,7 +39,7 @@ export default function DashboardLayout({
       <div className="hidden md:flex flex-col w-64 border-r bg-background">
         <div className="p-6">
           <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
-            <span>Chatbase Clone</span>
+            <span>AI Chatbase</span>
           </Link>
         </div>
         <div className="flex-1 px-4">
@@ -63,7 +63,7 @@ export default function DashboardLayout({
                 <SheetContent side="left" className="w-64">
                   <div className="px-2 py-6">
                     <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl mb-6">
-                      <span>Chatbase Clone</span>
+                      <span>AI Chatbase</span>
                     </Link>
                     <DashboardNav />
                   </div>

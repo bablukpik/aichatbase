@@ -31,7 +31,7 @@ export default function Home() {
         <div className="container flex h-14 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="font-bold text-xl">
-              Chatbase Clone
+              AI Chatbase
             </Link>
             {/* Mobile Menu */}
             <div className="md:hidden">
@@ -86,14 +86,14 @@ export default function Home() {
       <section className="relative">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-blue-100/80 to-indigo-50 dark:from-gray-900 dark:via-gray-900/80 dark:to-gray-900" />
-        
+
         <div className="container relative">
           <div className="mx-auto flex max-w-[980px] flex-col items-center gap-4 text-center py-20 md:py-32">
             <h1 className="text-4xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1] bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
               Build Custom ChatGPT for<br className="hidden sm:inline" />your Knowledge Base
             </h1>
             <p className="max-w-[750px] text-base sm:text-lg text-muted-foreground md:text-xl px-4">
-              Train ChatGPT on your data. Add your documents, websites, PDFs, and more. 
+              Train ChatGPT on your data. Add your documents, websites, PDFs, and more.
               Create a custom ChatGPT that knows everything about your business.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
@@ -255,10 +255,10 @@ export default function Home() {
         <div className="container flex flex-col gap-4 md:flex-row md:justify-between">
           <div className="flex flex-col gap-2">
             <Link href="/" className="font-bold">
-              Chatbase Clone
+              AI Chatbase
             </Link>
             <p className="text-sm text-muted-foreground">
-              © 2024 Chatbase Clone. All rights reserved.
+              © 2024 AI Chatbase. All rights reserved.
             </p>
           </div>
           <div className="flex gap-8">
@@ -355,6 +355,7 @@ const pricingPlans = [
       "File upload up to 5MB",
       "Standard response time",
     ],
+    buttonText: "Get Started"
   },
   {
     name: "Pro",
@@ -374,6 +375,7 @@ const pricingPlans = [
       "Audit logs",
       "Multi-language support",
     ],
+    buttonText: "Subscribe"
   },
   {
     name: "Enterprise",
@@ -392,6 +394,7 @@ const pricingPlans = [
       "Dedicated manager",
       "On-premise deployment",
     ],
+    buttonText: "Subscribe"
   },
 ]
 

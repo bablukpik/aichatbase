@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Chatbase Clone",
+  title: "AI Chatbase",
   description: "A SaaS application similar to Chatbase.co",
 };
 
