@@ -149,3 +149,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Chatbase.co](https://chatbase.co) for inspiration
 - [Shadcn](https://twitter.com/shadcn) for the amazing UI components
 - [Vercel](https://vercel.com) for the hosting platform
+
+## Documentation
+
+- [Prisma Schema Documentation](docs/prisma-schema.md) - Detailed schema documentation for the database models

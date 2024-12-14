@@ -1,9 +1,31 @@
 // import prisma from "@/lib/prisma";
 import prisma from "../src/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma } from '@prisma/client';
 import bcrypt from "bcryptjs";
 
+const organization = {
+  id: "default-id",
+  name: "Default Organization",
+};
+
+const superAdmin = {
+  email: "superadmin@example.com",
+  name: "Super Admin",
+  password: "superadmin123",
+  organizationId: organization.id,
+};
+
 async function main() {
+  // Create default organization first
+  const defaultOrg = await prisma.organization.upsert({
+    where: { id: organization.id },
+    update: {},
+    create: {
+      id: organization.id,
+      name: organization.name,
+    },
+  });
+
   // Create roles
   const roles: Prisma.RoleCreateInput[] = [
     { name: "Super Admin", description: "Full access to all features" },
@@ -41,7 +63,7 @@ async function main() {
 
   // Assign all permissions to Super Admin role
   const superAdminRole = await prisma.role.findUnique({
-    where: { name: "Super Admin" },
+    where: { name: superAdmin.name },
   });
   const allPermissions = await prisma.permission.findMany();
 
@@ -57,16 +79,17 @@ async function main() {
   }
 
   // Create a super admin user
-  const hashedPassword = await bcrypt.hash("superadmin123", 10);
+  const hashedPassword = await bcrypt.hash(superAdmin.password, 10);
   const superAdminUser = await prisma.user.upsert({
-    where: { email: "superadmin@example.com" },
+    where: { email: superAdmin.email },
     update: {},
     create: {
-      email: "superadmin@example.com",
-      name: "Super Admin",
+      email: superAdmin.email,
+      name: superAdmin.name,
       password: hashedPassword,
+      organizationId: defaultOrg.id,
       roles: {
-        connect: { name: "Super Admin" },
+        connect: { name: superAdmin.name },
       },
     },
   });
