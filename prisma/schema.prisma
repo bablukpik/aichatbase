@@ -66,6 +66,7 @@ model User {
   chatbots      Chatbot[]
   subscription  Subscription?
   auditLogs     AuditLog[]
+  roles         Role[]   @relation("UserRoles")
 
   @@index([organizationId])
 }
@@ -157,4 +158,23 @@ model TeamInvite {
 
   @@index([organizationId])
   @@index([email])
+}
+
+model Role {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  permissions Permission[] @relation("RolePermissions")
+  users       User[]       @relation("UserRoles")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Permission {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  route     String
+  roles     Role[]   @relation("RolePermissions")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
