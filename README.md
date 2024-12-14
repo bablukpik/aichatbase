@@ -83,25 +83,53 @@ This command uses Docker Compose with `docker-compose.yml` and `docker-compose.p
 
 ### Database Management
 
-To run Prisma migrations:
+**To run Prisma migrations**
 
 ```bash
 npm run db:migrate:dev
 ```
 
-To generate Prisma client:
+**To generate Prisma client**
 
 ```bash
 npm run db:generate
 ```
 
-### Stopping the Application
+**Stopping the Application**
 
 To stop and remove containers:
 
 ```bash
 npm run down
 ```
+
+**Seeding the Database**
+
+```bash
+npm run db:seed
+```
+
+**This will create the following user**
+
+- Email: superadmin@email.com
+- Name: Super Admin
+- Password: superadmin123
+
+**This will create the following organization**
+
+- Name: Default Organization
+
+**This will create the following roles**
+
+- Super Admin
+- Admin
+- Manager
+- Staff
+- Guest
+
+**This will create the following permissions:**
+
+- Create, Read, Update, Delete (CRUD) for all models
 
 ## Project Structure
 
@@ -111,6 +139,7 @@ npm run down
 - `prisma/`: Prisma schema and migrations
 - `public/`: Static assets
 
+```
 src/
 ├── app/ # App router pages
 │ ├── api/ # API routes
@@ -122,6 +151,7 @@ src/
 ├── lib/ # Utility functions
 ├── hooks/ # Custom hooks
 └── types/ # TypeScript types
+```
 
 ## Authentication
 
